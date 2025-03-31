@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template
 from ranking.api import get_ranking_data
 from ranking.utils import parse_players, calculate_champion_stats
@@ -15,8 +16,8 @@ limiter = Limiter(
 
 @app.route('/')
 def index():
-    userNetID = "76561198112838034"
-    sessionSecret = "fa2926c57cec0fd2a4c9d3b9c9650ad1"
+    userNetID = os.environ.get("userNetID")
+    sessionSecret = os.environ.get("sessionSecret")
 
     try:
         # 솔로 모드
