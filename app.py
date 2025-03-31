@@ -19,13 +19,26 @@ def index():
     sessionSecret = "fa2926c57cec0fd2a4c9d3b9c9650ad1"
 
     try:
-        data = get_ranking_data(userNetID, sessionSecret)
-        players_data = data["data"]["players"]
-        players = parse_players(players_data)
-        champion_stats = calculate_champion_stats(players_data)
+        # 솔로 모드
+        solo_data = get_ranking_data(userNetID, sessionSecret, teamMode=1)
+        solo_players_data = solo_data["data"]["players"]
+        solo_players = parse_players(solo_players_data)
+        solo_stats = calculate_champion_stats(solo_players_data)
 
-        return render_template("index.html", players=players, champion_stats=champion_stats)
+        # 트리오 모드
+        trio_data = get_ranking_data(userNetID, sessionSecret, teamMode=2)
+        trio_players_data = trio_data["data"]["players"]
+        trio_players = parse_players(trio_players_data)
+        trio_stats = calculate_champion_stats(trio_players_data)
 
+        return render_template(
+            "index.html",
+            solo_players=solo_players,
+            trio_players=trio_players,
+            solo_stats=solo_stats,
+            trio_stats=trio_stats
+        )
+            
     except Exception as e:
         
         return render_template("index.html", error=True)

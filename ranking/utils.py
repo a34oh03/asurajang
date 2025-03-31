@@ -32,7 +32,10 @@ def calculate_champion_stats(players_raw):
             counter[champ_id] += 1
         except:
             continue
-    sorted_champs = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+    # 모든 캐릭터 포함시키기
+    full_stats = {cid: counter.get(cid, 0) for cid in champion_map.keys()}
+
+    sorted_champs = sorted(full_stats.items(), key=lambda x: x[1], reverse=True)
     labels = [champion_map.get(cid, str(cid)) for cid, _ in sorted_champs]
     counts = [count for _, count in sorted_champs]
     return {"labels": labels, "counts": counts}

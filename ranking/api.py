@@ -1,6 +1,6 @@
 import requests
 
-def get_ranking_data(userNetID, sessionSecret, rowCount=100):
+def get_ranking_data(userNetID, sessionSecret, teamMode=1, rowCount=100):
     API_URL = "http://live.surajang.com:6557/ranking/getTopRankN"
     params = {
         "userNetID": userNetID,
@@ -8,7 +8,7 @@ def get_ranking_data(userNetID, sessionSecret, rowCount=100):
         "region": "ES",
         "rankingType": 1,
         "champType": 0,
-        "teamMode": 1,
+        "teamMode": teamMode,
         "rowCount": rowCount
     }
 

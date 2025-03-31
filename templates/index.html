@@ -1,68 +1,114 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
 <title>아수라장 랭킹</title>
 <link href="/static/style.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .mode-buttons {
+        text-align: center;
+        margin: 20px 0;
+    }
+    .mode-buttons button {
+        padding: 10px 20px;
+        margin: 0 10px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .hidden { display: none; }
+	
+</style>
 </head>
-
 <body>
-
     {% if error %}
     <div style="text-align:center;">
-<img alt="에러 이미지" src="/static/error_image.png" width="200"/>
-<p style="font-size: 18px; margin-top: 10px;">주인장이 게임을 꺼서 못봐요</p>
-</div>
+        <img alt="에러 이미지" src="/static/error_image.png" width="200"/>
+        <p style="font-size: 18px; margin-top: 10px;">주인장이 게임을 꺼서 못봐요</p>
+    </div>
     {% else %}
 
-    <h1>Top 100 랭커</h1>
-<table>
-<thead>
-<tr>
-<th>등수</th>
-<th>아이디</th>
-<th>주 캐릭터</th>
-<th>플레이 포인트</th>
-</tr>
-</thead>
-<tbody>
-            {% for p in players %}
-            <tr>
-<td>{{ p.rank }}</td>
-<td>{{ p.nickname }}</td>
-<td>{{ p.champion }}</td>
-<td>{{ p.score }}</td>
-</tr>
-            {% endfor %}
-        </tbody>
-</table>
-<h2>자주 사용된 주 캐릭터</h2>
-<canvas height="300" id="chart" width="400"></canvas>
-<script>
-        const ctx = document.getElementById('chart');
-        const chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {{ champion_stats.labels | safe }},
-                datasets: [{
-                    label: '사용 횟수',
-                    data: {{ champion_stats.counts | safe }},
-                    backgroundColor: 'rgba(75, 192, 192, 0.4)'
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                scales: {
-                    x: { beginAtZero: true }
-                }
-            }
-        });
-    </script>
-{% endif %}
+    <div class="mode-buttons">
+        <button onclick="showMode('solo')">솔로</button>
+        <button onclick="showMode('trio')">트리오</button>
+    </div>
+
+    <div id="solo-section">
+        <h1>Top 100 랭커 (솔로)</h1>
+        <table>
+		  <colgroup>
+		    <col style="width: 10%;">
+		    <col style="width: 30%;">
+		    <col style="width: 30%;">
+		    <col style="width: 30%;">
+		  </colgroup>
+            <thead>
+                <tr><th>등수</th><th>아이디</th><th>주 캐릭터</th><th>플레이 포인트</th></tr>
+            </thead>
+            <tbody>
+                {% for p in solo_players %}
+                <tr><td>{{ p.rank }}</td><td>{{ p.nickname }}</td><td>{{ p.champion }}</td><td>{{ p.score }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h2>자주 사용된 주 캐릭터 (솔로)</h2>
+        <canvas id="solo-chart" width="400" height="300"></canvas>
+    </div>
+
+    <div id="trio-section" class="hidden">
+        <h1>Top 100 랭커 (트리오)</h1>
+        <table>
+		  <colgroup>
+		    <col style="width: 10%;">
+		    <col style="width: 30%;">
+		    <col style="width: 30%;">
+		    <col style="width: 30%;">
+		  </colgroup>
+            <thead>
+                <tr><th>등수</th><th>아이디</th><th>주 캐릭터</th><th>플레이 포인트</th></tr>
+            </thead>
+            <tbody>
+                {% for p in trio_players %}
+                <tr><td>{{ p.rank }}</td><td>{{ p.nickname }}</td><td>{{ p.champion }}</td><td>{{ p.score }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h2>자주 사용된 주 캐릭터 (트리오)</h2>
+        <canvas id="trio-chart" width="400" height="300"></canvas>
+    </div>
 
     <script>
+	function showMode(mode) {
+		const solo = document.getElementById('solo-section');
+		const trio = document.getElementById('trio-section');
+	
+		if (mode === 'solo') {
+			solo.classList.remove('hidden');
+			trio.classList.add('hidden');
+		} else {
+			solo.classList.add('hidden');
+			trio.classList.remove('hidden');
+	}
+}
+
+    new Chart(document.getElementById('solo-chart'), {
+        type: 'bar',
+        data: {
+            labels: {{ solo_stats.labels | safe }},
+            datasets: [{ label: '사용 횟수', data: {{ solo_stats.counts | safe }}, backgroundColor: 'rgba(75, 192, 192, 0.4)' }]
+        },
+        options: { indexAxis: 'y', scales: { x: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('trio-chart'), {
+        type: 'bar',
+        data: {
+            labels: {{ trio_stats.labels | safe }},
+            datasets: [{ label: '사용 횟수', data: {{ trio_stats.counts | safe }}, backgroundColor: 'rgba(153, 102, 255, 0.4)' }]
+        },
+        options: { indexAxis: 'y', scales: { x: { beginAtZero: true } } }
+    });
+
     document.querySelectorAll("img").forEach((img) => {
         img.loading = "lazy";
         img.onerror = function () {
@@ -84,5 +130,7 @@
         };
     });
     </script>
+
+    {% endif %}
 </body>
 </html>
