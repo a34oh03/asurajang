@@ -17,17 +17,16 @@ limiter = Limiter(
 @app.route('/')
 def index():
     userNetID = os.environ.get("userNetID")
-    sessionSecret = os.environ.get("sessionSecret")
 
     try:
         # 솔로 모드
-        solo_data = get_ranking_data(userNetID, sessionSecret, teamMode=1)
+        solo_data = get_ranking_data(userNetID, teamMode=1)
         solo_players_data = solo_data["data"]["players"]
         solo_players = parse_players(solo_players_data)
         solo_stats = calculate_champion_stats(solo_players_data)
 
         # 트리오 모드
-        trio_data = get_ranking_data(userNetID, sessionSecret, teamMode=2)
+        trio_data = get_ranking_data(userNetID, teamMode=2)
         trio_players_data = trio_data["data"]["players"]
         trio_players = parse_players(trio_players_data)
         trio_stats = calculate_champion_stats(trio_players_data)
