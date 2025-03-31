@@ -8,12 +8,32 @@
 </head>
 <body>
 
+    
     {% if error %}
     <div style="text-align:center;">
-        <img src="/static/error_image.png" alt="에러 이미지" width="200" />
+        <img id="error-img"
+             src="/static/error_image.png"
+             alt="에러 이미지"
+             width="200"
+             loading="lazy"
+             onerror="handleImageError(this)"
+        />
         <p style="font-size: 18px; margin-top: 10px;">주인장이 게임을 꺼서 못봐요</p>
     </div>
+    <script>
+        function handleImageError(img) {
+            if (!img.dataset.retry) {
+                img.dataset.retry = "1";
+                setTimeout(() => {
+                    img.src = img.src.split('?')[0] + '?v=' + new Date().getTime();
+                }, 1000);
+            } else {
+                img.alt = "이미지를 불러오지 못했습니다.";
+            }
+        }
+    </script>
     {% else %}
+{% else %}
 
     <h1>Top 100 랭커</h1>
     <table>
