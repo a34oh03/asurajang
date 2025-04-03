@@ -2,10 +2,11 @@ import json
 import firebase_admin
 from firebase_admin import credentials, storage
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 # 올바른 Firebase Storage 버킷 이름 (ex: <project-id>.appspot.com)
 BUCKET_NAME = "asurajang-39231.firebasestorage.app"
+KST = timezone(timedelta(hours=9))
 
 # Firebase 앱이 이미 초기화되어 있지 않으면 초기화
 if not firebase_admin._apps:
@@ -50,10 +51,12 @@ def get_latest_backup_time():
     return None
 
 def set_latest_backup_time():
-    """Firebase에 마지막 백업 시간 기록"""
-    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    """[TEST용] Firebase에 마지막 백업 시간 기록 (하루 전으로 고정)"""
+    # ✅ 현재 시각에서 하루 전 시각을 저장
+    now_str = (datetime.now(KST) - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+    
     bucket = storage.bucket()
     blob = bucket.blob("backups/last_backup.txt")
     blob.upload_from_string(now_str)
-    print("[Firebase] 마지막 백업 시각 저장됨:", now_str)
 
+    print("[TEST] Firebase에 하루 전 백업 시각 저장됨:", now_str)
