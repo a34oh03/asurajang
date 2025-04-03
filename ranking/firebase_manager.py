@@ -4,15 +4,20 @@ from firebase_admin import credentials, storage
 import os
 from datetime import datetime
 
-# 서비스 계정 키 경로 (직접 받은 json 파일)
-SERVICE_ACCOUNT_KEY_PATH = "firebase_config.json"
-
 # 올바른 Firebase Storage 버킷 이름 (ex: <project-id>.appspot.com)
 BUCKET_NAME = "asurajang-39231.firebasestorage.app"
 
-# ✅ Firebase 앱이 이미 초기화되어 있지 않으면 초기화
+# Firebase 앱이 이미 초기화되어 있지 않으면 초기화
 if not firebase_admin._apps:
-    cred = credentials.Certificate(SERVICE_ACCOUNT_KEY_PATH)
+    if "RENDER" in os.environ:
+        print("[INFO] Render 환경 감지됨 → 환경변수로 Firebase 초기화")
+        firebase_json_str = os.environ.get("FIREBASE_CONFIG_JSON")
+        cred_dict = json.loads(firebase_json_str)
+        cred = credentials.Certificate(cred_dict)
+    else:
+        print("[INFO] 로컬 환경 → 파일로 Firebase 초기화")
+        cred = credentials.Certificate("firebase_config.json")
+
     firebase_admin.initialize_app(cred, {
         "storageBucket": BUCKET_NAME
     })
