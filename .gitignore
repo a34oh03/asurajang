@@ -9,3 +9,4 @@ instance/
 .webassets-cache
 static/*.png
 .DS_Store
+firebase_config.json

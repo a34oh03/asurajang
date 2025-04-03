@@ -17,17 +17,33 @@
         cursor: pointer;
     }
     .hidden { display: none; }
-	
+
+    table {
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    th, td {
+        text-align: left;
+        padding: 8px 10px;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
 </style>
 </head>
 <body>
     {% if error %}
     <div style="text-align:center;">
         <img alt="에러 이미지" src="/static/error_image.png" width="200"/>
-        <p style="font-size: 18px; margin-top: 10px;">주인장이 게임을 꺼서 못봐요</p>
+        <p style="font-size: 18px; margin-top: 10px;">다들 게임을 안해서 못봐요</p>
     </div>
     {% else %}
 
+	<p style="position: absolute; top: 10px; right: 20px; font-size: 12px; color: gray;">
+        이전 업데이트 시간: {{ last_backup }}<br/>
+        최근 업데이트 시간: {{ now_time }}
+	</p>
+	
     <div class="mode-buttons">
         <button onclick="showMode('solo')">솔로</button>
         <button onclick="showMode('trio')">트리오</button>
@@ -47,7 +63,32 @@
             </thead>
             <tbody>
                 {% for p in solo_players %}
-                <tr><td>{{ p.rank }}</td><td>{{ p.nickname }}</td><td>{{ p.champion }}</td><td>{{ p.score }}</td></tr>
+                <tr>
+                    <td>{{ p.rank }}</td>
+                    <td>
+                        {{ p.nickname }}
+                        {% if p.rank_change == "new" %}
+                            <span style="color:gold;">(new!)</span>
+                        {% elif p.rank_change is not none %}
+                            {% if p.rank_change > 0 %}
+                                <span style="color:red;">(↑{{ p.rank_change }})</span>
+                            {% elif p.rank_change < 0 %}
+                                <span style="color:blue;">(↓{{ -p.rank_change }})</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>{{ p.champion }}</td>
+                    <td>
+                        {{ p.score }}
+                        {% if p.score_change is not none %}
+                            {% if p.score_change > 0 %}
+                                <span style="color:red;">(+{{ p.score_change }})</span>
+                            {% elif p.score_change < 0 %}
+                                <span style="color:blue;">({{ p.score_change }})</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -58,18 +99,43 @@
     <div id="trio-section" class="hidden">
         <h1>Top 100 랭커 (트리오)</h1>
         <table>
-		  <colgroup>
-		    <col style="width: 10%;">
-		    <col style="width: 30%;">
-		    <col style="width: 30%;">
-		    <col style="width: 30%;">
-		  </colgroup>
+          <colgroup>
+            <col style="width: 10%;">
+            <col style="width: 30%;">
+            <col style="width: 30%;">
+            <col style="width: 30%;">
+          </colgroup>
             <thead>
                 <tr><th>등수</th><th>아이디</th><th>주 캐릭터</th><th>플레이 포인트</th></tr>
             </thead>
             <tbody>
                 {% for p in trio_players %}
-                <tr><td>{{ p.rank }}</td><td>{{ p.nickname }}</td><td>{{ p.champion }}</td><td>{{ p.score }}</td></tr>
+                <tr>
+                    <td>{{ p.rank }}</td>
+                    <td>
+                        {{ p.nickname }}
+                        {% if p.rank_change == "new" %}
+                            <span style="color:gold;">(new!)</span>
+                        {% elif p.rank_change is not none %}
+                            {% if p.rank_change > 0 %}
+                                <span style="color:red;">(↑{{ p.rank_change }})</span>
+                            {% elif p.rank_change < 0 %}
+                                <span style="color:blue;">(↓{{ -p.rank_change }})</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>{{ p.champion }}</td>
+                    <td>
+                        {{ p.score }}
+                        {% if p.score_change is not none %}
+                            {% if p.score_change > 0 %}
+                                <span style="color:red;">(+{{ p.score_change }})</span>
+                            {% elif p.score_change < 0 %}
+                                <span style="color:blue;">({{ p.score_change }})</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>

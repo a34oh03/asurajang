@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Too Many Requests</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #fff;
+        }
+        img {
+            width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 42px;
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 20px;
+        }
+        .main-message {
+            font-size: 28px;
+            font-weight: bold;
+            color: #111;
+            line-height: 1.6;
+        }
+        .sub-message {
+            font-size: 20px;
+            color: #666;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Too Many Requests</h1>
+    <img src="{{ url_for('static', filename='rate_limit.png') }}" alt="제한됨 이미지">
+    <div class="main-message">
+        누군가가 너무 많은<br/>
+        조회를 하고 있어요<br/><br/>
+        1분 후 이용해 주세요...
+    </div>
+    <div class="sub-message">
+        ※ 페이지를 자주 새로고침하면 제한될 수 있어요.
+    </div>
+</body>
+</html>
