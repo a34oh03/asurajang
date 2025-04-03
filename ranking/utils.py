@@ -1,6 +1,6 @@
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 
 champion_map = {
@@ -8,7 +8,8 @@ champion_map = {
     6: "하누만", 7: "비카랄라", 8: "유안", 9: "여울", 10: "테타누치",
     11: "카이사치", 12: "레이", 13: "웨이", 17: "쇼요"
 }    
-    
+KST = timezone(timedelta(hours=9))
+
 def parse_players(players_raw):
     players = []
     for i in range(0, len(players_raw), 4):
@@ -48,7 +49,7 @@ def should_backup_based_on_time(last_backup_str: str) -> bool:
     - 오늘 00:00 이후 처음으로 실행되면 백업 수행
     - 이미 오늘 중에 한 번 백업되었으면 스킵
     """
-    now = datetime.now()
+    now = datetime.now(KST)
 
     if not last_backup_str or last_backup_str == "없음":
         return True

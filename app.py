@@ -18,7 +18,8 @@ from ranking.firebase_manager import (
     get_latest_backup_time,
     set_latest_backup_time,
 )
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+
 from ranking.backup_cache import get_cached_backup_data
 
 
@@ -32,8 +33,10 @@ limiter = Limiter(
 
 # -----------------백업 실행 함수---------------------
 
+KST = timezone(timedelta(hours=9))
+
 def try_backup_if_needed(user_ids):
-    now = datetime.now()
+    now = datetime.now(KST)
     now_time = now.strftime("%Y-%m-%d %H:%M:%S")
     last_backup = get_latest_backup_time() or "없음"
 
@@ -110,7 +113,7 @@ def get_valid_user_id(user_ids, team_mode):
     
 @app.route('/')
 def index():
-    user_ids = "76561198282803228,76561198135312640,76561198112838034,76561198275442609,76561198171079102".split(",")#os.environ.get("userNetIDs", "").split(",")
+    user_ids = os.environ.get("userNetIDs", "").split(",")
  
     # 큐 초기화 (처음만 실행)
     global _user_queue
@@ -173,7 +176,7 @@ def index():
 @app.route("/trigger-backup")
 def trigger_backup():
     try:
-        user_ids = "76561198282803228,76561198135312640,76561198112838034,76561198275442609,76561198171079102".split(",")#os.environ.get("userNetIDs", "").split(",")
+        user_ids = os.environ.get("userNetIDs", "").split(",")
 
         did_backup, now_time = try_backup_if_needed(user_ids)
         if did_backup:
@@ -191,11 +194,11 @@ def trigger_backup():
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["5 per minute"]  # 전체 요청 2회/분 제한
+    default_limits=["60 per minute"]  # 전체 요청 60회/분 제한
 )
 
 @app.route('/static/<path:filename>')
-@limiter.limit("5 per minute")  # 정적 파일도 별도 제한
+@limiter.limit("60 per minute")  # 정적 파일도 별도 제한
 def serve_static(filename):
     print("[STATIC 제한] 요청됨:", filename)
     return send_from_directory('static', filename)
