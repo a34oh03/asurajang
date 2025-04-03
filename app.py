@@ -87,7 +87,7 @@ def get_valid_user_id(user_ids, team_mode):
     if cached_uid and now - _user_cache["timestamp"] < CACHE_TTL:
         try:
             get_ranking_data(cached_uid, teamMode=team_mode)
-            print(f"[CACHE] 캐시된 userID 사용 : {cached_uid}"}
+            print(f"[CACHE] 캐시된 userID 사용 : {cached_uid}")
             return cached_uid
         except:
             print(f"[INFO] 캐시된 {cached_uid} 비활성화 → 순환 시작")
