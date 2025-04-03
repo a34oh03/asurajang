@@ -110,7 +110,7 @@ def get_valid_user_id(user_ids, team_mode):
     
 @app.route('/')
 def index():
-    user_ids = os.environ.get("USER_IDS", "").split(",")
+    user_ids = os.environ.get("userNetIDs", "").split(",")
  
     # 큐 초기화 (처음만 실행)
     global _user_queue
@@ -173,7 +173,7 @@ def index():
 @app.route("/trigger-backup")
 def trigger_backup():
     try:
-        user_ids = os.environ.get("USER_IDS", "").split(",")
+        user_ids = os.environ.get("userNetIDs", "").split(",")
 
         did_backup, now_time = try_backup_if_needed(user_ids)
         if did_backup:
