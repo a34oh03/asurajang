@@ -56,6 +56,7 @@ def should_backup_based_on_time(last_backup_str: str) -> bool:
 
     try:
         last_backup = datetime.strptime(last_backup_str, "%Y-%m-%d %H:%M:%S")
+        last_backup = last_backup.replace(tzinfo=KST)
     except:
         return True
 
