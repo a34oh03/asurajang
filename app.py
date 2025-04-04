@@ -165,13 +165,13 @@ def index():
         for p in solo_players:
             p["nickname_raw"] = p["nickname"]
             if solo_top_champions.get(p["champion"]) == p["nickname"]:
-                p["nickname"] = f"<span class='champion-top'>{p['nickname']} 🌟</span>"
+                p["nickname"] = f"{p['nickname']} 🌟"
 
         trio_top_champions = get_top_players_by_champion(trio_players)
         for p in trio_players:
             p["nickname_raw"] = p["nickname"]
             if trio_top_champions.get(p["champion"]) == p["nickname"]:
-                p["nickname"] = f"<span class='champion-top'>{p['nickname']} 🌟</span>"
+                p["nickname"] = f"{p['nickname']} 🌟"
 
         return render_template(
             "index.html",
