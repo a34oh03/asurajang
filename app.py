@@ -7,6 +7,7 @@ from ranking.utils import (
     parse_players,
     calculate_champion_stats,
     should_backup_based_on_time,
+    get_top_players_by_champion,
     compare_rankings
 )
 from flask_limiter import Limiter
@@ -158,7 +159,19 @@ def index():
             print("[INFO] 백업 데이터 없음 → 비교 생략")
             solo_players = [{ **p, "rank_change": "new", "score_change": None } for p in solo_now]
             trio_players = [{ **p, "rank_change": "new", "score_change": None } for p in trio_now]
+    
+        # 🌟 캐릭터별 1등 마킹
+        solo_top_champions = get_top_players_by_champion(solo_players)
+        for p in solo_players:
+            p["nickname_raw"] = p["nickname"]
+            if solo_top_champions.get(p["champion"]) == p["nickname"]:
+                p["nickname"] = f"<span class='champion-top'>{p['nickname']} 🌟</span>"
 
+        trio_top_champions = get_top_players_by_champion(trio_players)
+        for p in trio_players:
+            p["nickname_raw"] = p["nickname"]
+            if trio_top_champions.get(p["champion"]) == p["nickname"]:
+                p["nickname"] = f"<span class='champion-top'>{p['nickname']} 🌟</span>"
 
         return render_template(
             "index.html",

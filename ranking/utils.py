@@ -71,7 +71,20 @@ def should_backup_based_on_time(last_backup_str: str) -> bool:
         return False
         
 
+def get_top_players_by_champion(players):
+    """
+    각 캐릭터별로 가장 높은 점수를 가진 플레이어를 추출
+    """
+    top_players = {}
 
+    for p in players:
+        champ = p["champion"]
+        if champ not in top_players or p["score"] > top_players[champ]["score"]:
+            top_players[champ] = {"nickname": p["nickname"], "score": p["score"]}
+
+    # 챔피언: 닉네임 형식으로 반환
+    return {champ: data["nickname"] for champ, data in top_players.items()}
+    
 def compare_rankings(prev, curr):
     """
     이전 랭킹(prev)과 현재 랭킹(curr)을 비교하여,
