@@ -107,7 +107,7 @@ def get_valid_user_id(user_ids, team_mode):
         except Exception as e:
             print(f"[{uid}] 데이터 요청 실패: {e}")
             rotate_user_queue(uid)
-            time.sleep(0.3)
+            time.sleep(0.125)
 
     raise Exception("모든 userNetID에서 데이터를 받아오지 못했습니다.")
     
@@ -209,11 +209,11 @@ def trigger_backup():
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["5 per minute"]  # 전체 요청 60회/분 제한
+    default_limits=["6 per minute"]  # 전체 요청 6회/분 제한
 )
 
 @app.route('/static/<path:filename>')
-@limiter.limit("5 per minute")  # 정적 파일도 별도 제한
+@limiter.limit("6 per minute")  # 정적 파일도 별도 제한
 def serve_static(filename):
     print("[STATIC 제한] 요청됨:", filename)
     return send_from_directory('static', filename)
