@@ -61,7 +61,8 @@ def try_backup_if_needed(user_ids):
     
 
 # ------------------- userID 캐시 및 우선순위 -------------------
-CACHE_TTL = 3600  # 1시간 유지
+CACHE_TTL = 60 * 60 * 2  # 2시간 유지
+CACHE_TTL_HOUR = CACHE_TTL // 3600
 _user_cache = {
     "uid": None,
     "timestamp": 0
@@ -100,7 +101,7 @@ def get_valid_user_id(user_ids, team_mode):
             print(f"[INFO] 유효한 userNetID 사용됨: {uid}")
             _user_cache["uid"] = uid
             _user_cache["timestamp"] = now
-            print(f"[INFO] {uid} 가 1시간 동안 캐싱 됨.")
+            print(f"[INFO] {uid} 가 {CACHE_TTL_HOUR}시간 동안 캐싱 됨.")
             prioritize_user(uid)
             return uid
         except Exception as e:
@@ -208,11 +209,11 @@ def trigger_backup():
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["60 per minute"]  # 전체 요청 60회/분 제한
+    default_limits=["30 per minute"]  # 전체 요청 60회/분 제한
 )
 
 @app.route('/static/<path:filename>')
-@limiter.limit("60 per minute")  # 정적 파일도 별도 제한
+@limiter.limit("30 per minute")  # 정적 파일도 별도 제한
 def serve_static(filename):
     print("[STATIC 제한] 요청됨:", filename)
     return send_from_directory('static', filename)
