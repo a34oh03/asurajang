@@ -1,6 +1,7 @@
 import os
 import time
 import json
+import threading
 from flask import Flask, render_template
 from ranking.api import get_ranking_data
 from ranking.utils import (
@@ -60,7 +61,8 @@ def try_backup_if_needed(user_ids):
     return False, now_time
     
 
-# ------------------- userID 캐시 및 우선순위 -------------------
+# ------------------- 글로벌 변수 ------------------------------
+WAKE_UP_CYCLE = 15 * 60 # 15분
 CACHE_TTL = 60 * 60 * 2  # 2시간 유지
 CACHE_TTL_HOUR = CACHE_TTL // 3600
 _user_cache = {
@@ -68,6 +70,10 @@ _user_cache = {
     "timestamp": 0
 }
 _user_queue = []  # 순서 정보
+
+last_access_time = time.time() #마지막 접속 시간
+
+# ------------------- userID 캐시 및 우선순위 -------------------
 
 def rotate_user_queue(user_id):
     """유효하지 않은 userNetID를 뒤로 보냄"""
@@ -111,7 +117,31 @@ def get_valid_user_id(user_ids, team_mode):
 
     raise Exception("모든 userNetID에서 데이터를 받아오지 못했습니다.")
     
-    
+# ------------------------- 서버 깨우기 감시 ------------------
+
+def monitor_inactivity():
+    global last_access_time
+
+    while True:
+        now = time.time()
+        if now - last_access_time > WAKE_UP_CYCLE: # 15분 간격으로
+            try:
+                import requests
+                response = requests.head("https://asurajang.onrender.com/ping", timeout=(5,25))
+                print("[PING] 15분 동안 아무도 접속하지 않아서 /ping으로 서버 깨우기 HEAD 요청 보냄:", response.status_code)
+            except Exception as e:
+                print("[PING] 서버 깨우기 실패:", e)
+            finally:
+                last_access_time = time.time()
+        time.sleep(60)
+
+threading.Thread(target=monitor_inactivity, daemon=True).start()
+
+@app.before_request
+def update_last_access_time():
+    global last_access_time
+    last_access_time = time.time()
+
 # -------------------- 라우팅 --------------------
     
 @app.route('/')
@@ -213,7 +243,15 @@ def trigger_backup():
         return f"[ERROR] 백업 실패: {e}"
 
 
-
+# /ping 엔드포인트
+@app.route('/ping')
+def ping():
+    if request.method == "HEAD":
+        print("[HEAD] /ping 경로로 HEAD 요청 감지됨 → 15분 지나서 자동 갱신")
+        return "", 200
+    else:
+        print("[접속] 사람이 직접 /ping 접속.. ?? 이걸 왜 사람이 접속하지")
+        return "pong (사람 접속)", 200
 
 limiter = Limiter(
     get_remote_address,
