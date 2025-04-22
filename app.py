@@ -27,12 +27,6 @@ from ranking.backup_cache import get_cached_backup_data
 
 app = Flask(__name__)
 
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["45 per minute"]
-)
-
 # -----------------백업 실행 함수---------------------
 
 KST = timezone(timedelta(hours=9))
