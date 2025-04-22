@@ -57,6 +57,7 @@ def try_backup_if_needed(user_ids):
 
 # ------------------- 글로벌 변수 ------------------------------
 WAKE_UP_INTERVAL_SECONDS  = 14 * 60 # 14분
+WAKE_UP_INTERVAL_MIN = WAKE_UP_INTERVAL_SECONDS // 60
 CACHE_TTL = 60 * 60 * 2  # 2시간 유지
 CACHE_TTL_HOUR = CACHE_TTL // 3600
 _user_cache = {
@@ -122,7 +123,7 @@ def monitor_inactivity():
             try:
                 import requests
                 response = requests.head("https://asurajang.onrender.com/ping", timeout=(5,25))
-                print(f"[PING] {WAKE_UP_INTERVAL_SECONDS // 60 }분 마다 /ping으로 서버 깨우기 HEAD 요청 보냄:", response.status_code)
+                print(f"[PING] {WAKE_UP_INTERVAL_MIN}분 마다 /ping으로 서버 깨우기 HEAD 요청 보냄:", response.status_code)
             except Exception as e:
                 print("[PING] 서버 깨우기 실패:", e)
             finally:
@@ -237,7 +238,7 @@ def trigger_backup():
 def ping():
     global last_access_time
     if request.method == "HEAD":
-        print(f"[HEAD] /ping 경로로 HEAD 요청 감지됨 → {WAKE_UP_CYCLE}분 지나서 자동 갱신")
+        print(f"[HEAD] /ping 경로로 HEAD 요청 감지됨 → {WAKE_UP_INTERVAL_MIN}분 지나서 자동 갱신")
         last_access_time = time.time()
         return "", 200
     else:
