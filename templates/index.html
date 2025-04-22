@@ -168,9 +168,21 @@
 		} else {
 			solo.classList.add('hidden');
 			trio.classList.remove('hidden');
-	}
-}
-
+	    }
+		
+		// 선택된 모드를 localStorage에 저장
+		localStorage.setItem('selectedMode', mode);
+    }
+	// 페이지가 로드될 때 저장된 모드로 자동 표시
+	window.addEventListener('DOMContentLoaded', (event) => {
+		const savedMode = localStorage.getItem('selectedMode');
+		if (savedMode === 'trio') {
+			showMode('trio');
+		} else {
+			showMode('solo'); // 기본값은 솔로
+		}
+	});
+	
     new Chart(document.getElementById('solo-chart'), {
         type: 'bar',
         data: {
