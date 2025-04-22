@@ -116,6 +116,10 @@ def get_valid_user_id(user_ids, team_mode):
     
 @app.route('/')
 def index():
+    # HEAD 요청은 간단 응답 후 무시 처리
+    if request.method == "HEAD":
+        print("[HEAD] / 경로로 HEAD 요청 감지됨 → 무시하고 OK 반환")
+        return "", 200
     user_ids = os.environ.get("userNetIDs", "").split(",")
  
     # 큐 초기화 (처음만 실행)
@@ -190,6 +194,11 @@ def index():
 
 @app.route("/trigger-backup")
 def trigger_backup():
+    # HEAD 요청은 간단 응답 후 무시 처리
+    if request.method == "HEAD":
+        print("[HEAD] /trigger-backup 경로로 HEAD 요청 감지됨 → 무시하고 OK 반환")
+        return "", 200
+        
     try:
         user_ids = os.environ.get("userNetIDs", "").split(",")
 
