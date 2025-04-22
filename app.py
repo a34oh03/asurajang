@@ -241,7 +241,7 @@ def trigger_backup():
 @app.route('/ping')
 def ping():
     if request.method == "HEAD":
-        print("[HEAD] /ping 경로로 HEAD 요청 감지됨 → 15분 지나서 자동 갱신")
+        print(f"[HEAD] /ping 경로로 HEAD 요청 감지됨 → {WAKE_UP_CYCLE}분 지나서 자동 갱신")
         return "", 200
     else:
         print("[접속] 사람이 직접 /ping 접속.. ?? 이걸 왜 사람이 접속하지")
